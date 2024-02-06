@@ -1,0 +1,235 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --primary-color: hsl(235, 50%, 67%);
+  --primary-color-hover: hsl(235, 50%, 73%);
+  --danger-color: hsl(351, 100%, 70%);
+  --danger-color-hover: hsl(351, 100%, 76%);
+  --success-color: hsl(120, 73%, 75%);
+  --failure-color: hsl(9, 100%, 64%);
+}
+/* normalizing */
+*,
+::before,
+::after{
+  padding: 0;
+  margin: 0;
+  border: 0;
+  box-sizing: border-box;
+}
+a,
+.header_right {
+  text-decoration: none;
+  color: white;
+}
+.header_right:hover {
+  cursor: pointer;
+}
+a.router-link-active {
+  color: hsl(235, 100%, 60%);
+}
+ul,
+ol,
+li{
+  list-style: none;
+}
+img{
+  vertical-align: top;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6{
+  font-weight: inherit;
+  font-size: inherit;
+}
+html,
+body,
+#app{
+  height: 100%;
+  line-height: 1;
+  font-size: 16px;
+  font-weight: 400;
+  color: #2c3e50;
+  background: #eeeeee;
+  font-family: 'Montserrat', sans-serif;
+}
+/* end normalizing */
+.user_name {
+  color: white;
+}
+.user_name:hover {
+  cursor: pointer;
+}
+.form_container {
+  max-width: 350px;
+  padding: 20px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+}
+.form_container > *:not(:last-child) {
+  margin: 0 0 20px 0;
+}
+.auth-form input {
+  padding: 15px;
+  width: 100%;
+  height: 45px;
+  font-size: 20px;
+}
+.auth-form input:focus {
+  color: inherit;
+  background-color: #fff;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+.auth-form input[type="submit"] {
+  height: 45px;
+  padding: 0 15px;
+  font-size: 20px;
+  background: #435cfc;
+  color: #eeeeee;
+  border: 0;
+  font-family: 'Raleway', sans-serif;
+  align-self: flex-end;
+  width: fit-content;
+}
+.auth-form input[type="submit"]:hover {
+  background: #5d73f8;
+  cursor: pointer;
+}
+.auth-form input[type="submit"]:active {
+  border-color: rgba(0, 123, 255, 0.25);
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+.error-msg {
+  color: var(--danger-color);
+  margin-top: 8px;
+}
+.error-msg.top-error-msg {
+  margin-bottom: 12px;
+}
+.loader {
+  margin: auto;
+  width: 25px;
+  height: 25px;
+  border: 3px solid #fff;
+  border-top: 3px solid var(--primary-color);
+  border-right: 3px solid var(--primary-color);
+  border-radius: 50%;
+  animation: rotate 1.5s linear infinite;
+}
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* Form bottom links */
+.form-bottom-links {
+  margin: 0 auto;
+  font-weight: 500;
+}
+.form-bottom-links > *:not(:last-child) {
+  margin-bottom: 10px;
+}
+.form-bottom-links a {
+  text-decoration: none;
+  color: hsl(235, 100%, 60%);
+}
+.form-bottom-links a:hover {
+  text-decoration: underline;
+}
+.form-bottom-links .forgot-password {
+  text-align: center;
+}
+/* Forgot password popup */
+.forgot-password-popup {
+  padding: 10px;
+  background-color: var(--success-color);
+  font-weight: 500;
+}
+/* Tree structure */
+.tree {
+  padding: 20px;
+}
+.tree_node {
+  list-style: none;
+  position: relative;
+}
+.node_content {
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+  padding: 10px 30px;
+  border-radius: 4px;
+  transition: background-color 0.3s, color 0.3s;
+  background-color: hsl(235, 50%, 67%);
+  color: white;
+  text-align: center;
+  overflow: hidden;
+  margin-bottom: 8px;
+  user-select: none;
+}
+.node_content > *:first-child {
+  text-align: left;
+}
+.node_content:hover {
+  background-color: hsl(235, 50%, 73%);
+}
+.node_label {
+  display: inline-block;
+  flex: 0 1 33.333%;
+}
+.node_content_buttons {
+  display: flex;
+  justify-content: right;
+}
+.node_content_buttons > :not(:last-child) {
+  margin-right: 15px;
+}
+.tree_node > .tree_node {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: opacity 0.5s, max-height 0.5s, margin-left 0.5s;
+  border-radius: 4px;
+  color: white;
+}
+.tree_node > .tree_node.visible {
+  opacity: 1;
+  max-height: 100vh;
+  margin-left: 25px;
+}
+/* Form */
+.form {
+  display: flex;
+  flex-direction: column;
+  min-width: 450px;
+}
+.form_title {
+  font-size: 22px;
+  font-weight: 500;
+}
+.form button {
+  align-self: end;
+  margin-top: 4px;
+}
+.form > *:not(:last-child) {
+  margin-bottom: 10px;
+}
+@media (max-width: 550px) {
+  .form {
+    min-width: 300px;
+  }
+}
+@media (max-width: 420px) {
+  .form {
+    min-width: 0;
+  }
+}

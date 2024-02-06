@@ -1,0 +1,61 @@
+version: '3'
+services:
+  nginx:
+    build:
+      context: ./backend
+      dockerfile: docker/nginx/nginx.docker
+    volumes:
+      - ./backend:/var/www
+    ports:
+      - "8000:80"
+    links:
+      - php-fpm
+  php-fpm:
+    build:
+      context: ./backend
+      dockerfile: docker/php/php-fpm.docker
+    volumes:
+      - ./backend:/var/www
+    depends_on:
+      - mysql
+    environment:
+      - PHP_IDE_CONFIG=serverName=XdebugServer
+      - DEBUG=1
+      - DB_PORT=3306
+      - DB_HOST=mysql
+  php-cli:
+    build:
+      context: ./backend
+      dockerfile: docker/php/php-cli.docker
+    volumes:
+      - ./backend:/var/www
+    depends_on:
+      - mysql
+    environment:
+      - DB_PORT=3306
+      - DB_HOST=mysql
+    tty: true
+  mysql:
+    image: mysql:5.7
+    volumes:
+      - ./backend/storage/docker/mysql:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=secret
+      - MYSQL_USER=app
+      - MYSQL_PASSWORD=secret
+      - MYSQL_DATABASE=app
+    ports:
+      - "33061:3306"
+  node:
+    image: node:20.10.0-slim
+    volumes:
+      - ./backend:/var/www
+    working_dir: /var/www
+    tty: true
+#  vue:
+#    build:
+#      context: ./frontend
+#      dockerfile: docker/vue-app.docker
+#    ports:
+#      - "5173:8080"
+#    tty: true
