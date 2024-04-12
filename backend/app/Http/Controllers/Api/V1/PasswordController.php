@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\V1\PasswordRequest;
 use App\Http\Resources\V1\PasswordResource;
 use App\Models\Group;
 use App\Models\Password;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Services\PasswordService;
+use Illuminate\Support\Facades\DB;
 use Mockery\Exception;
 
 /**
@@ -136,7 +139,49 @@ class PasswordController extends Controller
    */
   public function store(Request $request)
   {
-    //
+    $name = request('name');
+    $group = request('group');
+
+    $password = auth()->user()->passwords()->where('name', $name)->get();
+
+    if(!$password->isEmpty()){
+      return response()->json([
+        'error' => 'Conflict',
+        'message' => 'The resource already exists in the database.'
+      ], 409);
+    }
+
+    $password = Password::create([
+      'name' => request('name'),
+      'password' => request('password'),
+      'description' => request('description')
+    ]);
+
+    auth()->user()->passwords()->attach($password, [
+      'owner' => 1,
+      'permitted' => 1
+    ]);
+
+    if(isset($group)){
+      $password->groups()->attach($group);
+
+      return ['data' => [
+        'id' => $password->id,
+        'name' => $password->name,
+        'password' => $password->password,
+        'description' => $password->description,
+        'owner' => $password->users()->withPivot('owner')->first()->pivot->owner,
+        'group' => $password->groups()->first()->id
+      ]];
+    }
+
+    return ['data' => [
+      'id' => $password->id,
+      'name' => $password->name,
+      'password' => $password->password,
+      'description' => $password->description,
+      'owner' => $password->users()->withPivot('owner')->first()->pivot->owner
+    ]];
   }
 
   /**
@@ -152,13 +197,39 @@ class PasswordController extends Controller
 
   /**
    * Update the specified password in storage.
+   * Group values can be: -1 which means password not in group, -2 which means
+   * password must be ungrouped
    *
    * @param Request $request The HTTP request instance containing the updated password data.
    * @param Password $password The password instance to be updated.
    */
-  public function update(Request $request, Password $password)
+  public function update(PasswordRequest $request, Password $password)
   {
-    //
+    $password->update([
+      'name' => $request->input('name'),
+      'password' => $request->input('password'),
+      'description' => $request->input('description'),
+    ]);
+
+    $passwordInDb = auth()->user()->passwords()->where('id', $password->id)->with('groups')->first();
+    $targetGroupId = $request->input('toGroupId');
+
+    if($passwordInDb && $passwordInDb->groups->isNotEmpty()) {
+      $initialGroupId = $passwordInDb->groups[0]->id;
+      if ($targetGroupId > 0 && $targetGroupId !== $initialGroupId) {
+        $password->groups()->sync([$targetGroupId]);
+      } else if ($targetGroupId === -2) {
+        $password->groups()->detach([$initialGroupId]);
+      }
+    } else {
+      if($targetGroupId > 0){
+        $password->groups()->attach([$targetGroupId]);
+      }
+    }
+
+    return ['data' => [
+      'message' => 'success'
+    ]];
   }
 
   /**
@@ -168,11 +239,17 @@ class PasswordController extends Controller
    */
   public function destroy(Password $password)
   {
-    //
+    return DB::transaction(function() use($password){
+      $passwordId = $password->id;
+      $password->users()->detach();
+      $password->groups()->detach();
+      $password->delete();
+      return ['data' => $passwordId];
+    });
   }
 
   /**
-   * Toggle the status of a password for a given user.
+   * Toggle status of a password for a given user.
    *
    * @return array An array containing the updated password status data.
    */

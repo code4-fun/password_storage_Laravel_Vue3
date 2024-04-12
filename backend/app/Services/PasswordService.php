@@ -9,7 +9,7 @@ class PasswordService
 {
   public function getUserWithPivotByPasswordIdAndUserId($passwordId, $userId): Collection
   {
-    $password = Password::query()->find($passwordId);
+    $password = Password::find($passwordId);
 
     if ($password) {
       return $password->users()

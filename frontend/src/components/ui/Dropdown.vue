@@ -1,43 +1,49 @@
 <script setup lang="ts">
-import {defineProps, onMounted} from "vue";
+import {defineProps, onBeforeUnmount, onMounted} from "vue";
 import type {DropdownOption} from "@/types";
 
-onMounted(() => {
-  document.addEventListener("click", (event: MouseEvent) => {
-    const targetElement = event.target as HTMLElement
+const handleDocumentClick = (event: MouseEvent) => {
+  const targetElement = event.target as HTMLElement
 
-    const currentDropdown = targetElement.closest('.main_dropdown')
-    const dropdownButton = targetElement.closest('.dropdown-button')
+  const currentDropdown = targetElement.closest('.main_dropdown')
+  const dropdownButton = targetElement.closest('.dropdown-button')
 
-    if(targetElement && targetElement.matches('.main_dropdown .dropdown-menu .link')){
-      currentDropdown?.classList.remove('active')
-      document.querySelector('.chevron')?.classList.remove('active')
+  if(targetElement && targetElement.matches('.main_dropdown .dropdown-menu .link')){
+    currentDropdown?.classList.remove('active')
+    document.querySelector('.chevron')?.classList.remove('active')
+    document.querySelector('.chevron')?.classList.remove('top')
+    document.querySelector('.chevron')?.classList.add('bottom')
+  }
+
+  if (dropdownButton && currentDropdown?.contains(dropdownButton)){
+    currentDropdown?.classList.toggle('active')
+    if(currentDropdown?.className.includes('active')){
+      document.querySelector('.chevron')?.classList.remove('bottom')
+      document.querySelector('.chevron')?.classList.add('top')
+    } else {
       document.querySelector('.chevron')?.classList.remove('top')
       document.querySelector('.chevron')?.classList.add('bottom')
     }
+  }
 
-    if (dropdownButton && currentDropdown?.contains(dropdownButton)){
-      currentDropdown?.classList.toggle('active')
-      if(currentDropdown?.className.includes('active')){
-        document.querySelector('.chevron')?.classList.remove('bottom')
-        document.querySelector('.chevron')?.classList.add('top')
-      } else {
-        document.querySelector('.chevron')?.classList.remove('top')
-        document.querySelector('.chevron')?.classList.add('bottom')
-      }
+  document.querySelectorAll(".main_dropdown.active").forEach(dropdown => {
+    if (dropdown === currentDropdown){
+      return
     }
-
-    document.querySelectorAll(".main_dropdown.active").forEach(dropdown => {
-      if (dropdown === currentDropdown){
-        return
-      }
-      dropdown.classList.remove('active')
-      document.querySelector('.chevron')?.classList.remove('active')
-      document.querySelector('.chevron')?.classList.remove('top')
-      document.querySelector('.chevron')?.classList.add('bottom')
-    })
+    dropdown.classList.remove('active')
+    document.querySelector('.chevron')?.classList.remove('active')
+    document.querySelector('.chevron')?.classList.remove('top')
+    document.querySelector('.chevron')?.classList.add('bottom')
   })
+}
+
+onMounted(() => {
+  document.addEventListener("click", handleDocumentClick);
 })
+
+onBeforeUnmount(() => {
+  document.removeEventListener("click", handleDocumentClick);
+});
 
 withDefaults(
   defineProps<{

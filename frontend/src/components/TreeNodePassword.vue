@@ -2,6 +2,7 @@
 import {defineProps} from 'vue';
 import type {StorePasswordItem} from "@/types";
 import {usePasswordStore} from "@/stores/passwordStore";
+import PasswordForm from "@/components/PasswordForm.vue";
 
 const passwordStore = usePasswordStore()
 
@@ -17,12 +18,23 @@ const props = withDefaults(
   }
 )
 
-const editHandler = () => {
-  console.log('edit')
+const editHandler = (password: StorePasswordItem, fromGroupId: number | null = null) => {
+  passwordStore.toggleModal(true, {
+    component: PasswordForm,
+    props: {
+      id: password.id,
+      name: password.name,
+      password: password.password,
+      description: password.description,
+      fromGroupId: fromGroupId,
+      buttonValue: 'Save',
+      onSubmit: passwordStore.updatePassword
+    }
+  })
 }
 
-const deleteHandler = () => {
-  console.log('delete')
+const deleteHandler = (passwordId: number, groupId: number) => {
+  passwordStore.deletePassword(passwordId, groupId)
 }
 
 const handleDragStart = (item: StorePasswordItem, event: DragEvent) => {
@@ -36,7 +48,7 @@ const handleDragStart = (item: StorePasswordItem, event: DragEvent) => {
 </script>
 
 <template>
-  <div class="tree_node" v-if="passwords && passwords.length" :class="{ 'visible': expanded }">
+  <div :class="['tree_node', {'visible': expanded}]" v-if="passwords && passwords.length">
     <div class="tree_node_child" v-for="password in passwords" :key="password.id">
       <div class="node_content"
            :draggable="true"
@@ -45,8 +57,8 @@ const handleDragStart = (item: StorePasswordItem, event: DragEvent) => {
         <span class="node_label">{{ password.name }}</span>
         <span class="node_label">{{ password.password }}</span>
         <div class="node_label node_content_buttons">
-          <div v-if="password.owner" class="node_edit" @click.stop="editHandler">Edit</div>
-          <div v-if="password.owner" class="node_delete" @click.stop="deleteHandler">Delete</div>
+          <div v-if="password.owner" class="node_edit" @click.stop="editHandler(password, groupId)">Edit</div>
+          <div v-if="password.owner" class="node_delete" @click.stop="deleteHandler(password.id, groupId)">Delete</div>
         </div>
       </div>
     </div>

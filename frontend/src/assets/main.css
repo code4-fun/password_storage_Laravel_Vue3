@@ -216,7 +216,7 @@ body,
   font-size: 22px;
   font-weight: 500;
 }
-.form button {
+.form > button {
   align-self: end;
   margin-top: 4px;
 }
@@ -232,4 +232,18 @@ body,
   .form {
     min-width: 0;
   }
+}
+/* vue-select overriding */
+.vs__deselect{
+  fill: #ffffff !important;
+}
+.vs__dropdown-menu {
+  scrollbar-width: thin !important;
+  scrollbar-color: #ababab #e7e7e7 !important;
+  max-height: 300px !important;
+  border: 2px solid hsl(235, 100%, 90%) !important;
+  border-top: 0 !important;
+}
+.vs__actions {
+  cursor: pointer !important;
 }

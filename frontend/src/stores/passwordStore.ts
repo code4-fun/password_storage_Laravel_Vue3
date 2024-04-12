@@ -7,15 +7,20 @@ import {
   updateUserPasswordPivotTable,
   getGroupApi,
   updateGroupApi,
-  deleteGroupApi
+  deleteGroupApi,
+  createPasswordApi,
+  deletePasswordApi,
+  updatePasswordApi
 } from '@/api/password'
 import type {
   ApiDataResponse,
   DragObjectInfo,
   Group,
   ModalContent,
+  Password,
   PasswordStore,
-  PasswordToggleResponse
+  PasswordToggleResponse,
+  StorePasswordItem
 } from "@/types";
 import {isAdminPasswords, isUserPasswords} from "@/types";
 import cloneDeep from 'lodash/cloneDeep'
@@ -79,29 +84,11 @@ export const usePasswordStore = defineStore('passwordStore', () => {
    * @param {number | null} [fromGroupId=null] - The ID of the source group (optional, defaults to null)
    * @returns {Promise<void>} - Promise indicating the success or failure of the operation
    */
-  const changeGroup = async (passwordId: number, toGroupId: number | null, fromGroupId: number | null = null) => {
+  const changeGroup = async (passwordId: number, toGroupId: number | null, fromGroupId: number | null = null): Promise<void> => {
     const groups = cloneDeep(state.groups.value)
     const passwords = cloneDeep(state.passwords.value)
 
-    if(fromGroupId && toGroupId){
-      const fromGroupIndex = state.groups.value.findIndex(i => i.id === fromGroupId)
-      const fromGroup = state.groups.value[fromGroupIndex]
-      const elementIndex = fromGroup.passwords?.findIndex(i => i.id === passwordId)
-      const element = fromGroup.passwords.splice(elementIndex, 1)[0]
-      const toGroupIndex = state.groups.value.findIndex(i => i.id === toGroupId)
-      state.groups.value[toGroupIndex].passwords.push(element)
-    } else if(!fromGroupId){
-      const elementIndex = state.passwords.value.findIndex(i => i.id === passwordId)
-      const element = state.passwords.value.splice(elementIndex, 1)[0]
-      const toGroupIndex = state.groups.value.findIndex(i => i.id === toGroupId)
-      state.groups.value[toGroupIndex].passwords.push(element)
-    } else if(!toGroupId){
-      const fromGroupIndex = state.groups.value.findIndex(i => i.id === fromGroupId)
-      const fromGroup = state.groups.value[fromGroupIndex]
-      const elementIndex = fromGroup.passwords.findIndex(i => i.id === passwordId)
-      const element = fromGroup.passwords.splice(elementIndex, 1)[0]
-      state.passwords.value.push(element)
-    }
+    changeGroupLocally(passwordId, toGroupId, fromGroupId)
 
     try{
       await changePasswordGroupApi({
@@ -113,9 +100,36 @@ export const usePasswordStore = defineStore('passwordStore', () => {
         }
       })
     } catch(e){
-      console.log(e)
       state.groups.value = groups
       state.passwords.value = passwords
+    }
+  }
+
+  /**
+   * Change the group of a password in the local store
+   * @param {number} passwordId - The ID of the password to be moved
+   * @param {number | null} toGroupId - The ID of the destination group
+   * @param {number | null} [fromGroupId=null] - The ID of the source group (optional, defaults to null)
+   */
+  const changeGroupLocally = (passwordId: number, toGroupId: number | null, fromGroupId: number | null = null) => {
+    if(fromGroupId && toGroupId){  // пароль перемещается из одной группы в другую группу
+      const fromGroupIndex = state.groups.value.findIndex(i => i.id === fromGroupId)
+      const fromGroup = state.groups.value[fromGroupIndex]
+      const elementIndex = fromGroup.passwords?.findIndex(i => i.id === passwordId)
+      const element = fromGroup.passwords.splice(elementIndex, 1)[0]
+      const toGroupIndex = state.groups.value.findIndex(i => i.id === toGroupId)
+      state.groups.value[toGroupIndex].passwords.push(element)
+    } else if(!fromGroupId){  // пароль перемещается из несгруппированных в группу
+      const elementIndex = state.passwords.value.findIndex(i => i.id === passwordId)
+      const element = state.passwords.value.splice(elementIndex, 1)[0]
+      const toGroupIndex = state.groups.value.findIndex(i => i.id === toGroupId)
+      state.groups.value[toGroupIndex].passwords.push(element)
+    } else if(!toGroupId){  // пароль перемещается из группы в несгруппированные
+      const fromGroupIndex = state.groups.value.findIndex(i => i.id === fromGroupId)
+      const fromGroup = state.groups.value[fromGroupIndex]
+      const elementIndex = fromGroup.passwords.findIndex(i => i.id === passwordId)
+      const element = fromGroup.passwords.splice(elementIndex, 1)[0]
+      state.passwords.value.push(element)
     }
   }
 
@@ -263,6 +277,88 @@ export const usePasswordStore = defineStore('passwordStore', () => {
     }
   }
 
+  const storePassword = async (password: Password) => {
+    try{
+      const response = await createPasswordApi({
+        uri: '/api/v1/passwords',
+        body: {
+          ...password
+        }
+      })
+      if(response.data?.group){
+        const targetGroup = state.groups.value.find(i => i.id === response.data.group)
+        const {group, ...password} = response.data
+        targetGroup?.passwords.push(password as StorePasswordItem)
+      } else {
+        state.passwords.value.push(response.data as StorePasswordItem)
+      }
+    } catch(e){
+      console.log(e)
+    }
+  }
+
+
+  const updatePassword = async (password: Password) => {
+    try{
+      await updatePasswordApi({
+        uri: `/api/v1/passwords/${password.id}`,
+        body: {
+          ...password
+        }
+      })
+      if(password.fromGroupId){
+        state.groups.value.forEach(item => {
+          if(item.id === password.fromGroupId){
+            updatePasswordData(item.passwords, password)
+          }
+        })
+      } else {
+        updatePasswordData(state.passwords.value, password)
+      }
+      toggleModal(false, null)
+      if(password.toGroupId === -1 || password.toGroupId === password.fromGroupId){
+        return
+      }
+      password.id && password.toGroupId && changeGroupLocally(
+        password.id,
+        password.toGroupId === -2 ? null : password.toGroupId,
+        password.fromGroupId
+      )
+    } catch(e){
+      console.log(e)
+    }
+  }
+
+  const updatePasswordData = (passwords: Password[], newPassword: Password) => {
+    passwords.forEach((item, index, array) => {
+      item.id === newPassword.id && (array[index] = {
+        ...item,
+        name: newPassword.name,
+        password: newPassword.password,
+        description: newPassword.description
+      })
+    })
+  }
+
+  const deletePassword = async (passwordId: number, groupId: number | null = null) => {
+    try{
+      const response = await deletePasswordApi({
+        uri: `/api/v1/passwords/${passwordId}`
+      })
+      if(groupId){
+        const targetGroup = state.groups.value.find(i => i.id === groupId)
+        const indexToDelete = targetGroup?.passwords.findIndex(i => i.id === response.data) as number
+        indexToDelete !== -1 && targetGroup?.passwords.splice(indexToDelete, 1)
+      } else {
+        const indexToDelete = state.passwords.value.findIndex(i => i.id === response.data) as number
+        indexToDelete !== -1 && state.passwords.value.splice(indexToDelete, 1)
+      }
+    } catch(e){
+      console.log(e)
+      throw e
+    }
+  }
+
   /**
    * Updates the permission of a password for a specific user in the local state.
    *
@@ -295,6 +391,9 @@ export const usePasswordStore = defineStore('passwordStore', () => {
     storeGroup,
     fetchGroup,
     updateGroup,
-    deleteGroup
+    deleteGroup,
+    storePassword,
+    deletePassword,
+    updatePassword
   }
 })

@@ -2,13 +2,13 @@
 </script>
 
 <template>
-  <div class="page_content home_page">
-    Home
+  <div class="page_content about_page">
+    About
   </div>
 </template>
 
 <style scoped>
-  .home_page {
-    font-size: 100px;
-  }
+.about_page {
+  font-size: 100px;
+}
 </style>

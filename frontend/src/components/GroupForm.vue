@@ -13,8 +13,8 @@ const props = withDefaults(
   }>(),{}
 )
 
-const handleSubmit = (e:Event) => {
-  const form = e.target as HTMLFormElement
+const handleSubmit = (event:Event) => {
+  const form = event.target as HTMLFormElement
   const name = (form.elements.namedItem('name') as HTMLInputElement).value
 
   props.onSubmit({

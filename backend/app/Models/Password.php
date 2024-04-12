@@ -17,6 +17,8 @@ class Password extends Model
 {
   use HasFactory;
 
+  protected $fillable = ['name', 'password', 'description', 'group'];
+
   /**
    * Get the users associated with the password.
    *

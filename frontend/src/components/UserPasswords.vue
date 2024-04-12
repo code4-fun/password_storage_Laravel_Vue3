@@ -4,6 +4,7 @@ import TreeNodePassword from '@/components/TreeNodePassword.vue';
 import useToggleCollapse from "@/composables/useToggleCollapse";
 import type {StoreGroupItem, StorePasswordItem} from "@/types";
 import GroupForm from "@/components/GroupForm.vue";
+import PasswordForm from "@/components/PasswordForm.vue";
 
 const passwordStore = usePasswordStore()
 const {toggleCollapse, isExpanded} = useToggleCollapse()
@@ -24,12 +25,23 @@ const deleteGroupHandler = (id: number) => {
   passwordStore.deleteGroup(id)
 }
 
-const editPasswordHandler = () => {
-  console.log('edit password')
+const editPasswordHandler = (password: StorePasswordItem, fromGroupId: number | null = null) => {
+  passwordStore.toggleModal(true, {
+    component: PasswordForm,
+    props: {
+      id: password.id,
+      name: password.name,
+      password: password.password,
+      description: password.description,
+      fromGroupId: fromGroupId,
+      buttonValue: 'Save',
+      onSubmit: passwordStore.updatePassword
+    }
+  })
 }
 
-const deletePasswordHandler = () => {
-  console.log('delete password')
+const deletePasswordHandler = (id: number) => {
+  passwordStore.deletePassword(id)
 }
 
 const handleDragStart = (item: StorePasswordItem) => {
@@ -174,8 +186,8 @@ const handleOutsideGroupDrop = (event: DragEvent) => {
         <span class="node_label">{{ node.name }}</span>
         <span class="node_label">{{ node.password }}</span>
         <div class="node_label node_content_buttons">
-          <div v-if="node.owner" class="node_edit" @click.stop="editPasswordHandler">Edit</div>
-          <div v-if="node.owner" class="node_delete" @click.stop="deletePasswordHandler">Delete</div>
+          <div v-if="node.owner" class="node_edit" @click.stop="editPasswordHandler(node)">Edit</div>
+          <div v-if="node.owner" class="node_delete" @click.stop="deletePasswordHandler(node.id)">Delete</div>
         </div>
       </div>
     </div>

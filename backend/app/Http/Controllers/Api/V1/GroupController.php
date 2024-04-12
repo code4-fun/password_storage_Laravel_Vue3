@@ -28,9 +28,9 @@ class GroupController extends Controller
    */
   public function store(GroupRequest $request)
   {
-    $newGroup = auth()->user()->groups()->firstOrCreate(
-      ['name' => $request->input('name')]
-    );
+    $newGroup = auth()->user()->groups()->firstOrCreate([
+      'name' => $request->input('name')
+    ]);
     return new GroupResource($newGroup);
   }
 
@@ -56,7 +56,7 @@ class GroupController extends Controller
    */
   public function destroy(Group $group)
   {
-    return DB::transaction(function () use ($group) {
+    return DB::transaction(function() use($group){
       $groupId = $group->id;
       $relatedPasswords = $group->passwords;
       $group->passwords()->detach();

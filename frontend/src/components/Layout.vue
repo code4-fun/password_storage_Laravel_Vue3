@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {useAuthStore} from '@/stores/authStore'
 import Dropdown from "@/components/ui/Dropdown.vue";
-import type {DropdownOption, Group} from "@/types";
+import type {DropdownOption, Group, Password} from "@/types";
 import Sidebar from "@/components/ui/Sidebar.vue";
 import Modal from "@/components/ui/Modal.vue";
 import GroupForm from "@/components/GroupForm.vue";
@@ -16,6 +16,11 @@ const createGroup = (group: Group) => {
   passwordStore.toggleModal(false, null)
 }
 
+const createPassword = (password: Password) => {
+  passwordStore.storePassword(password)
+  passwordStore.toggleModal(false, null)
+}
+
 const options: DropdownOption[] = [
   {
     name: 'Create Group',
@@ -23,7 +28,7 @@ const options: DropdownOption[] = [
   },
   {
     name: 'Create Password',
-    action: () => passwordStore.toggleModal(true, {component: PasswordForm, props: null})
+    action: () => passwordStore.toggleModal(true, {component: PasswordForm, props: {onSubmit: createPassword}})
   },
   {
     name: 'Logout',

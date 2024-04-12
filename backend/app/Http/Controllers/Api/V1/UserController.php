@@ -14,7 +14,7 @@ class UserController extends Controller
    */
   public function index()
   {
-    return User::all();
+    return UserResource::collection(User::role('user')->get());
   }
 
   /**

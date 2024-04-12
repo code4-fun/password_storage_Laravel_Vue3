@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware(['auth:sanctum'])->get('/user', [UserController::class, 'show']);
+Route::middleware(['auth:sanctum'])->get('/user', [UserController::class, 'show'])->name('user.show');
 
 Route::group([
   'prefix' => 'v1',
@@ -25,7 +25,7 @@ Route::group([
   'middleware' => 'auth:sanctum'
 ], function(){
   Route::patch('passwords/groups', [PasswordController::class, 'changePasswordGroup']);
-  Route::apiResource('users', UserController::class)->middleware('role:admin');
+  Route::apiResource('users', UserController::class)/*->middleware('role:admin')*/;
   Route::apiResource('roles', RoleController::class)->middleware('role:admin');
   Route::apiResource('passwords', PasswordController::class);
   Route::apiResource('groups', GroupController::class);

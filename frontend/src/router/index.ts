@@ -2,7 +2,7 @@ import {createRouter, createWebHistory} from 'vue-router'
 import type { RouteRecordRaw, RouterOptions } from 'vue-router'
 import Layout from '../components/Layout.vue'
 import HomeView from '../views/HomeView.vue'
-import About from '../views/About.vue'
+import AboutView from '../views/AboutView.vue'
 import Passwords from '../views/Passwords.vue'
 import LoginView from '../views/auth/LoginView.vue'
 import RegisterView from '../views/auth/RegisterView.vue'
@@ -14,7 +14,7 @@ const routes = <Array<RouteRecordRaw>>[
   {path: '/', name: 'layout', component: Layout, redirect: {name: 'home'},
     children: [
       {path: 'home', name: 'home', component: HomeView},
-      {path: 'about', name: 'about', component: About, meta: {requiresAuth: true}},
+      {path: 'about', name: 'about', component: AboutView, meta: {requiresAuth: true}},
       {path: 'passwords', name: 'passwords', component: Passwords, meta: {requiresAuth: true}},
       {path: 'login', name: 'login', component: LoginView},
       {path: 'register', name: 'register', component: RegisterView},

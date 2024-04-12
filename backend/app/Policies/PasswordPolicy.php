@@ -28,7 +28,7 @@ class PasswordPolicy
    */
   public function create(User $user): bool
   {
-    //
+    return true;
   }
 
   /**
@@ -36,7 +36,7 @@ class PasswordPolicy
    */
   public function update(User $user, Password $password): bool
   {
-    //
+    return $user->passwords()->where('passwords.id', $password->id)->exists();
   }
 
   /**
@@ -44,7 +44,7 @@ class PasswordPolicy
    */
   public function delete(User $user, Password $password): bool
   {
-    //
+    return $user->passwords()->where('passwords.id', $password->id)->exists();
   }
 
   /**
@@ -70,7 +70,6 @@ class PasswordPolicy
     string | null $toGroupId): bool
   {
     $hasFromGroup = true;
-
     if (!is_null($fromGroupId)) {
       $hasFromGroup = $user->groups()->where('groups.id', $fromGroupId)->exists();
     }

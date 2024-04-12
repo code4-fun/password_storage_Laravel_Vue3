@@ -14,10 +14,17 @@ class UserResource extends JsonResource
    */
   public function toArray(Request $request): array
   {
-    return [
+    $isSingleUserRequest = $request->route()->named('users.show') || $request->route()->named('user.show');
+
+    $data = [
       'id' => $this->id,
       'name' => $this->name,
-      'roles' => $this->getRoleNames()
     ];
+
+    if($isSingleUserRequest){
+      $data['roles'] = $this->getRoleNames();
+    }
+
+    return $data;
   }
 }

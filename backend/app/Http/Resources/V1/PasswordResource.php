@@ -16,6 +16,7 @@ class PasswordResource extends JsonResource
   {
     return [
       'id' => $this->id,
+      'name' => $this->name,
       'password' => $this->password,
       'description' => $this->description,
       'owner' => $this->whenPivotLoaded('password_user', function () {

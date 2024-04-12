@@ -3,7 +3,7 @@ import type {AxiosError, AxiosResponse} from "axios";
 import axios from "axios";
 
 export interface RequestBody {
-  [key: string]: string | boolean | number
+  [key: string]: string | boolean | number | null
 }
 
 export interface ApiRequest {
@@ -181,5 +181,32 @@ export interface DropdownOption {
 
 export interface Group {
   id?: number
+  name: string
+}
+
+export interface Password {
+  id?: number
+  name: string
+  password: string
+  description: string
+  group?:number
+  fromGroupId?: number | null
+  toGroupId?: number | null
+}
+
+export interface SelectItem {
+  id: number
+  name: string
+  disabled?: boolean
+}
+
+export interface UserStore {
+  users: Ref<StoreUserItem[]>
+  loading: Ref<boolean>
+  errors: Ref<AppErrorData>
+}
+
+export interface StoreUserItem {
+  id: number
   name: string
 }

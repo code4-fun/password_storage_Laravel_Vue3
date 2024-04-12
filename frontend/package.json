@@ -15,12 +15,14 @@
     "lodash": "^4.17.21",
     "pinia": "^2.1.7",
     "vue": "^3.3.10",
-    "vue-router": "^4.2.5"
+    "vue-router": "^4.2.5",
+    "vue-select": "^4.0.0-beta.6"
   },
   "devDependencies": {
     "@tsconfig/node18": "^18.2.2",
     "@types/lodash": "^4.14.202",
     "@types/node": "^18.19.2",
+    "@types/vue-select": "^3.16.8",
     "@vitejs/plugin-vue": "^4.5.1",
     "@vue/tsconfig": "^0.4.0",
     "npm-run-all2": "^6.1.1",
