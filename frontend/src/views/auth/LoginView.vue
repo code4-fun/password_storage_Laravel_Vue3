@@ -2,6 +2,7 @@
 import {useAuthStore} from '@/stores/authStore'
 import router from '@/router'
 import {onMounted} from "vue";
+import Spinner from "@/components/ui/Spinner.vue";
 
 const authStore = useAuthStore()
 
@@ -23,7 +24,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="loader" v-if="authStore.loading" />
+  <Spinner v-if="authStore.loading" />
   <form v-else class="form_container auth-form" @submit.prevent='submitHandler' autoComplete="off">
     <div v-if="authStore.errors?.email && authStore.errors?.email[0].includes('These credentials')" class="error-msg top-error-msg">
       {{ authStore.errors?.email?.[0] }}

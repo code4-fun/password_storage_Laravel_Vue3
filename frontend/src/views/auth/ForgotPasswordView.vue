@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {useAuthStore} from '@/stores/authStore'
 import {onBeforeMount} from "vue";
+import Spinner from "@/components/ui/Spinner.vue";
 
 const authStore = useAuthStore()
 
@@ -20,7 +21,7 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <div class="loader" v-if="authStore.loading" />
+  <Spinner v-if="authStore.loading" />
   <form v-else class="form_container auth-form" @submit.prevent='submitHandler' autoComplete="off">
     <div v-if="authStore.status" class="forgot-password-popup">
       {{ authStore.status }}

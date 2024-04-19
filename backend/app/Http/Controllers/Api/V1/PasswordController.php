@@ -7,7 +7,8 @@ use App\Http\Requests\V1\PasswordRequest;
 use App\Http\Resources\V1\PasswordResource;
 use App\Models\Group;
 use App\Models\Password;
-use App\Models\User;
+use \Illuminate\Http\JsonResponse;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use App\Services\PasswordService;
 use Illuminate\Support\Facades\DB;
@@ -41,12 +42,12 @@ class PasswordController extends Controller
   /**
    * Display a listing of the resource.
    *
-   * If the user is an admin, return all passwords. For other users, return only
-   * their permitted passwords (with permitted=1).
+   * If the authenticated user is an admin, retrieves all passwords with associated users.
+   * If the authenticated user is not an admin, retrieves passwords associated with the user's groups and permissions.
    *
-   * @return array An array containing the data of passwords and groups for the user.
+   * @return array An array containing the list of passwords.
    */
-  public function index()
+  public function index(): array
   {
     if(auth()->user()->hasRole('admin')){
       $passwordsData = Password::with(['users' => function ($query) {
@@ -133,11 +134,13 @@ class PasswordController extends Controller
   }
 
   /**
-   * Store a newly created resource in storage.
+   * Store a newly created password.
    *
-   * @param Request $request The HTTP request instance.
+   * @param  Request  $request The request object containing the password data.
+   * @return array|JsonResponse An array containing the stored password data,
+   * or a JSON response with an error message if the resource already exists.
    */
-  public function store(Request $request)
+  public function store(Request $request): array|JsonResponse
   {
     $name = request('name');
     $group = request('group');
@@ -200,10 +203,11 @@ class PasswordController extends Controller
    * Group values can be: -1 which means password not in group, -2 which means
    * password must be ungrouped
    *
-   * @param Request $request The HTTP request instance containing the updated password data.
+   * @param PasswordRequest $request The HTTP request instance containing the updated password data.
    * @param Password $password The password instance to be updated.
+   * @return array An array containing a success message.
    */
-  public function update(PasswordRequest $request, Password $password)
+  public function update(PasswordRequest $request, Password $password): array
   {
     $password->update([
       'name' => $request->input('name'),
@@ -253,7 +257,8 @@ class PasswordController extends Controller
    *
    * @return array An array containing the updated password status data.
    */
-  public function togglePasswordStatus(){
+  public function togglePasswordStatus(): array
+  {
     $passwordId = request()->route('passwordId');
     $userId = request()->route('userId');
     $permitted = request('permitted');
@@ -282,9 +287,12 @@ class PasswordController extends Controller
    * Change the group of a password.
    *
    * @return array An array containing a success message.
+   *
+   * @throws AuthorizationException If the user is not authorized to perform the action.
    * @throws Exception If an unexpected error occurs.
    */
-  public function changePasswordGroup(){
+  public function changePasswordGroup(): array
+  {
     $passwordId = request('password_id');
     $fromGroupId = request('from_group_id');
     $toGroupId = request('to_group_id');
@@ -309,5 +317,25 @@ class PasswordController extends Controller
     return ['data' => [
       'message' => 'success'
     ]];
+  }
+
+  /**
+   * Get the list of users allowed access to the password.
+   *
+   * @param  Password  $password The password model.
+   * @return array Array of data containing the IDs of users allowed access to the password.
+   *
+   * @throws AuthorizationException If the user is not authorized to perform the action.
+   */
+  public function getAllowedUsers(Password $password): array
+  {
+    $this->authorize('getAllowedUsers', [$password]);
+    $currentUserId = auth()->user()->getAuthIdentifier();
+
+    $allowedUsersIds = $password->users()->wherePivot('user_id', '!=', $currentUserId)->pluck('id');
+
+    return [
+      'data' => $allowedUsersIds
+    ];
   }
 }

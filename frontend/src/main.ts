@@ -11,6 +11,6 @@ const app = createApp(App)
 app.use(createPinia())
 app.use(router)
 
-app.component("VueSelect", VueSelect)
+app.component("VueSelect_", VueSelect)
 
 app.mount('#app')

@@ -4,6 +4,7 @@ import {usePasswordStore} from '@/stores/passwordStore'
 import {useAuthStore} from '@/stores/authStore'
 import AdminPasswords from "@/components/AdminPasswords.vue";
 import UserPasswords from "@/components/UserPasswords.vue";
+import Spinner from "@/components/ui/Spinner.vue";
 
 const passwordStore = usePasswordStore()
 const authStore = useAuthStore()
@@ -14,7 +15,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div v-if="passwordStore.loading" class="loader" />
+  <Spinner v-if="passwordStore.loading" />
   <div v-else class="tree">
     <AdminPasswords v-if="authStore.user?.roles.includes('admin')" />
     <UserPasswords v-if="authStore.user?.roles.includes('user')" />

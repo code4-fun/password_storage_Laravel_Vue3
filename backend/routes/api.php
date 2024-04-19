@@ -30,4 +30,5 @@ Route::group([
   Route::apiResource('passwords', PasswordController::class);
   Route::apiResource('groups', GroupController::class);
   Route::patch('passwords/{passwordId}/users/{userId}', [PasswordController::class, 'togglePasswordStatus']);
+  Route::get('passwords/{password}/allowed_users', [PasswordController::class, 'getAllowedUsers']);
 });

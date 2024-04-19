@@ -83,4 +83,9 @@ class PasswordPolicy
 
     return $hasPassword && $hasFromGroup && $hasToGroup;
   }
+
+  public function getAllowedUsers(User $user, Password $password,)
+  {
+    return $user->passwords()->where('passwords.id', $password->id)->exists();
+  }
 }

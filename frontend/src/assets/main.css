@@ -112,24 +112,6 @@ body,
 .error-msg.top-error-msg {
   margin-bottom: 12px;
 }
-.loader {
-  margin: auto;
-  width: 25px;
-  height: 25px;
-  border: 3px solid #fff;
-  border-top: 3px solid var(--primary-color);
-  border-right: 3px solid var(--primary-color);
-  border-radius: 50%;
-  animation: rotate 1.5s linear infinite;
-}
-@keyframes rotate {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
 /* Form bottom links */
 .form-bottom-links {
   margin: 0 auto;

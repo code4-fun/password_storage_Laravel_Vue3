@@ -73,3 +73,9 @@ export const deletePasswordApi = (request: ApiRequest) => {
     method: 'DELETE'
   })
 }
+
+export const fetchAllowedUsersApi = (request: ApiRequest) => {
+  return makeRequest<ApiDataResponse<number[]>>(request.uri, {
+    method: 'GET'
+  })
+}

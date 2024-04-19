@@ -5,16 +5,9 @@ import Textarea from "@/components/ui/Textarea.vue"
 import Select from "@/components/ui/Select.vue"
 import {usePasswordStore} from "@/stores/passwordStore";
 import {useUserStore} from "@/stores/userStore";
-import type {Password, SelectItem} from "@/types";
-import {onMounted} from "vue";
-
-const options = ['Option 1', 'Option 2', 'Option 3'
-  , 'Option 4', 'Option 5', 'Option 6', 'Option 7',
-  'Option 8', 'Option 9', 'Option 10',
-  'Option 11', 'Option 12', 'Option 13',
-  'Option 14', 'Option 15', 'Option 16'
-]
-const selectedOption='Option 1'
+import type {Password, SelectItem, StoreUserItem} from "@/types";
+import {onMounted, onUnmounted} from "vue";
+import VueSelect from "@/components/ui/VueSelect.vue";
 
 const passwordStore = usePasswordStore()
 const userStore = useUserStore()
@@ -55,17 +48,32 @@ const selectExtraOptions = [
 
 onMounted(() => {
   userStore.fetchUsers()
+  passwordStore.fetchAllowedUsers(props.id)
+})
+
+onUnmounted(() => {
+  userStore.users = []
+  passwordStore.allowedUsers = []
 })
 </script>
 
 <template>
   <form @submit.prevent="handleSubmit" class='form'>
-    <div class='form_title'>Create password</div>
+    <div class="form_title">Create password</div>
     <Input name="name" :value="name" placeholder='Password name' />
     <Input name="password" :value="password" placeholder='Password' />
     <Textarea name="description" :value="description" placeholder='Password description' />
-    <VueSelect append-to-body multiple :options="options" placeholder='Allowed Users'></VueSelect>
-    <Select name="group" :selected="fromGroupId" :options="passwordStore.groups" :extraOptions="selectExtraOptions" />
+    <VueSelect
+      v-model="passwordStore.allowedUsers"
+      :options="userStore.users"
+      :reduce="(user: StoreUserItem) => user.id"
+      :optionsLoading="userStore.loading"
+      :selectedOptionsLoading="passwordStore.allowedUsersLoading" />
+    <Select
+      name="group"
+      :selected="fromGroupId"
+      :options="passwordStore.groups"
+      :extraOptions="selectExtraOptions" />
     <Button :value="buttonValue" />
   </form>
 </template>

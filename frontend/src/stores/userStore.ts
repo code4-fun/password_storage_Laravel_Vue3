@@ -32,8 +32,6 @@ export const useUserStore = defineStore('userStore', () => {
       const response: ApiDataResponse<any> = await getUsersApi({
         uri: '/api/v1/users'
       })
-
-      // console.log(response)
       state.users.value = response.data
     } catch(e){
       console.log(e)

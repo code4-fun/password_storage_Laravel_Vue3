@@ -10,7 +10,7 @@ import {
   deleteGroupApi,
   createPasswordApi,
   deletePasswordApi,
-  updatePasswordApi
+  updatePasswordApi, fetchAllowedUsersApi
 } from '@/api/password'
 import type {
   ApiDataResponse,
@@ -37,7 +37,9 @@ export const usePasswordStore = defineStore('passwordStore', () => {
     errors: ref({}),
     dragObjectInfo: ref(null),
     modalVisible: ref(false),
-    modalContent: ref(null)
+    modalContent: ref(null),
+    allowedUsers: ref([]),
+    allowedUsersLoading: ref(false)
   }
 
   /**
@@ -359,6 +361,23 @@ export const usePasswordStore = defineStore('passwordStore', () => {
     }
   }
 
+  const fetchAllowedUsers = async (passwordId: number | undefined) => {
+    if(!passwordId) return
+
+    try{
+      state.allowedUsersLoading.value = true
+      const response = await fetchAllowedUsersApi({
+        uri: `/api/v1/passwords/${passwordId}/allowed_users`
+      })
+      state.allowedUsers.value = response.data
+    } catch(e){
+      console.log(e)
+      throw e
+    } finally {
+      state.allowedUsersLoading.value = false
+    }
+  }
+
   /**
    * Updates the permission of a password for a specific user in the local state.
    *
@@ -394,6 +413,7 @@ export const usePasswordStore = defineStore('passwordStore', () => {
     deleteGroup,
     storePassword,
     deletePassword,
-    updatePassword
+    updatePassword,
+    fetchAllowedUsers
   }
 })

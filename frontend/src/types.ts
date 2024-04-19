@@ -100,6 +100,8 @@ export interface PasswordStore {
   dragObjectInfo: Ref<DragObjectInfo | null>
   modalVisible: Ref<boolean>
   modalContent: Ref<ModalContent | null>
+  allowedUsers: Ref<number[]>
+  allowedUsersLoading: Ref<boolean>
 }
 
 interface ValidationResponse extends AxiosResponse {
