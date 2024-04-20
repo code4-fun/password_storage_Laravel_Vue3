@@ -18,7 +18,6 @@ const createGroup = (group: Group) => {
 
 const createPassword = (password: Password) => {
   passwordStore.storePassword(password)
-  passwordStore.toggleModal(false, null)
 }
 
 const options: DropdownOption[] = [

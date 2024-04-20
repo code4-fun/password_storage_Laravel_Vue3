@@ -36,6 +36,7 @@ const handleSubmit = (event: Event) => {
     name: name,
     password: password,
     description: description,
+    allowedUsers: passwordStore.allowedUsers,
     fromGroupId: props.fromGroupId,
     toGroupId: toGroupId
   })
@@ -47,7 +48,7 @@ const selectExtraOptions = [
 ] as SelectItem[]
 
 onMounted(() => {
-  userStore.fetchUsers()
+  userStore.fetchUsersExceptAdminAndCurrentUser()
   passwordStore.fetchAllowedUsers(props.id)
 })
 
@@ -74,7 +75,7 @@ onUnmounted(() => {
       :selected="fromGroupId"
       :options="passwordStore.groups"
       :extraOptions="selectExtraOptions" />
-    <Button :value="buttonValue" />
+    <Button :value="buttonValue" :loading="passwordStore.passwordFormLoading" />
   </form>
 </template>
 

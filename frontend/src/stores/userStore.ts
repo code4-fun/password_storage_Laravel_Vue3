@@ -10,6 +10,7 @@ import type {
 
 /**
  * User Store using Pinia
+ *
  * @type {import("pinia").DefineStore<"userStore", UserStore>}
  */
 export const useUserStore = defineStore('userStore', () => {
@@ -26,11 +27,11 @@ export const useUserStore = defineStore('userStore', () => {
    * @function
    * @memberof useUserStore
    */
-  const fetchUsers = async () => {
+  const fetchUsersExceptAdminAndCurrentUser = async () => {
     try{
       state.loading.value = true
       const response: ApiDataResponse<any> = await getUsersApi({
-        uri: '/api/v1/users'
+        uri: '/api/v1/users/allow_list'
       })
       state.users.value = response.data
     } catch(e){
@@ -42,6 +43,6 @@ export const useUserStore = defineStore('userStore', () => {
 
   return {
     ...state,
-    fetchUsers
+    fetchUsersExceptAdminAndCurrentUser
   }
 })

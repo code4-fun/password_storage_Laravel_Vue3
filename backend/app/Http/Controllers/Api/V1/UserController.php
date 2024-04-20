@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\V1\UserResource;
 use App\Models\User;
+use \Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -14,7 +15,7 @@ class UserController extends Controller
    */
   public function index()
   {
-    return UserResource::collection(User::role('user')->get());
+    //
   }
 
   /**
@@ -47,5 +48,20 @@ class UserController extends Controller
   public function destroy(string $id)
   {
     //
+  }
+
+  /**
+   * Retrieve a collection of all users except the admin and the currently authenticated user.
+   * Used for allowed users list.
+   *
+   * @return AnonymousResourceCollection
+   */
+  public function allUsersExceptAdminAndCurrentUser(): AnonymousResourceCollection
+  {
+    return UserResource::collection(
+      User::role('user')
+        ->where('id', '!=', auth()->user()->getAuthIdentifier())
+        ->get()
+    );
   }
 }

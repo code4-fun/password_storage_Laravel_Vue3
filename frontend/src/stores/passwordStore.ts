@@ -27,6 +27,7 @@ import cloneDeep from 'lodash/cloneDeep'
 
 /**
  * Password Store using Pinia
+ *
  * @type {import("pinia").DefineStore<"passwordStore", PasswordStore>}
  */
 export const usePasswordStore = defineStore('passwordStore', () => {
@@ -34,6 +35,7 @@ export const usePasswordStore = defineStore('passwordStore', () => {
     passwords: ref([]),
     groups: ref([]),
     loading: ref(false),
+    passwordFormLoading: ref(false),
     errors: ref({}),
     dragObjectInfo: ref(null),
     modalVisible: ref(false),
@@ -81,6 +83,7 @@ export const usePasswordStore = defineStore('passwordStore', () => {
 
   /**
    * Change the group of a password
+   *
    * @param {number} passwordId - The ID of the password to be moved
    * @param {number | null} toGroupId - The ID of the destination group
    * @param {number | null} [fromGroupId=null] - The ID of the source group (optional, defaults to null)
@@ -109,6 +112,7 @@ export const usePasswordStore = defineStore('passwordStore', () => {
 
   /**
    * Change the group of a password in the local store
+   *
    * @param {number} passwordId - The ID of the password to be moved
    * @param {number | null} toGroupId - The ID of the destination group
    * @param {number | null} [fromGroupId=null] - The ID of the source group (optional, defaults to null)
@@ -178,6 +182,7 @@ export const usePasswordStore = defineStore('passwordStore', () => {
 
   /**
    * Toggle the visibility of a modal with optional content
+   *
    * @param {boolean} visible - Whether to make the modal visible or not
    * @param {ModalContent | null} modalContent - Optional content to be displayed in the modal
    * @returns {void}
@@ -189,6 +194,7 @@ export const usePasswordStore = defineStore('passwordStore', () => {
 
   /**
    * Get a non-reactive copy of the current modal content
+   *
    * @returns {ModalContent | null} - Non-reactive modal content or null if no content is present
    */
   const getNonReactiveModalContent = (): ModalContent | null => {
@@ -199,6 +205,7 @@ export const usePasswordStore = defineStore('passwordStore', () => {
 
   /**
    * Store a new group
+   *
    * @param {Group} group - The group to be stored
    * @returns {Promise<void>} - Promise indicating the success or failure of the operation
    */
@@ -223,6 +230,7 @@ export const usePasswordStore = defineStore('passwordStore', () => {
 
   /**
    * Update an existing group
+   *
    * @param {Group} group - The group with updated information
    * @returns {Promise<void>} - Promise indicating the success or failure of the operation
    */
@@ -246,6 +254,7 @@ export const usePasswordStore = defineStore('passwordStore', () => {
 
   /**
    * Delete a group by ID
+   *
    * @param {number} groupId - The ID of the group to be deleted
    * @returns {Promise<void>} - Promise indicating the success or failure of the operation
    */
@@ -264,6 +273,7 @@ export const usePasswordStore = defineStore('passwordStore', () => {
 
   /**
    * Fetch a group by ID
+   *
    * @param {number} groupId - The ID of the group to be fetched
    * @returns {Promise<Group>} - Promise resolving to the fetched group
    */
@@ -279,8 +289,14 @@ export const usePasswordStore = defineStore('passwordStore', () => {
     }
   }
 
+  /**
+   * Stores a new password.
+   *
+   * @param {Password} password - The password to store.
+   */
   const storePassword = async (password: Password) => {
     try{
+      state.passwordFormLoading.value = true
       const response = await createPasswordApi({
         uri: '/api/v1/passwords',
         body: {
@@ -296,12 +312,20 @@ export const usePasswordStore = defineStore('passwordStore', () => {
       }
     } catch(e){
       console.log(e)
+    } finally {
+      state.passwordFormLoading.value = false
+      toggleModal(false, null)
     }
   }
 
-
+  /**
+   * Updates a password.
+   *
+   * @param {Password} password - The password to update.
+   */
   const updatePassword = async (password: Password) => {
     try{
+      state.passwordFormLoading.value = true
       await updatePasswordApi({
         uri: `/api/v1/passwords/${password.id}`,
         body: {
@@ -317,7 +341,6 @@ export const usePasswordStore = defineStore('passwordStore', () => {
       } else {
         updatePasswordData(state.passwords.value, password)
       }
-      toggleModal(false, null)
       if(password.toGroupId === -1 || password.toGroupId === password.fromGroupId){
         return
       }
@@ -328,9 +351,18 @@ export const usePasswordStore = defineStore('passwordStore', () => {
       )
     } catch(e){
       console.log(e)
+    } finally {
+      state.passwordFormLoading.value = false
+      toggleModal(false, null)
     }
   }
 
+  /**
+   * Updates the password data in the provided array of passwords.
+   *
+   * @param {Password[]} passwords - The array of passwords to update.
+   * @param {Password} newPassword - The new password data to update.
+   */
   const updatePasswordData = (passwords: Password[], newPassword: Password) => {
     passwords.forEach((item, index, array) => {
       item.id === newPassword.id && (array[index] = {
@@ -342,6 +374,12 @@ export const usePasswordStore = defineStore('passwordStore', () => {
     })
   }
 
+  /**
+   * Deletes a password.
+   *
+   * @param {number} passwordId - The ID of the password to delete.
+   * @param {number | null} groupId - The ID of the group from which the password is deleted (optional).
+   */
   const deletePassword = async (passwordId: number, groupId: number | null = null) => {
     try{
       const response = await deletePasswordApi({
@@ -361,9 +399,13 @@ export const usePasswordStore = defineStore('passwordStore', () => {
     }
   }
 
+  /**
+   * Fetches allowed users for a specific password from the backend API and updates the state.
+   *
+   * @param {number | undefined} passwordId - The ID of the password.
+   */
   const fetchAllowedUsers = async (passwordId: number | undefined) => {
     if(!passwordId) return
-
     try{
       state.allowedUsersLoading.value = true
       const response = await fetchAllowedUsersApi({

@@ -3,7 +3,7 @@ import type {AxiosError, AxiosResponse} from "axios";
 import axios from "axios";
 
 export interface RequestBody {
-  [key: string]: string | boolean | number | null
+  [key: string]: string | boolean | number | number[] | null
 }
 
 export interface ApiRequest {
@@ -69,6 +69,7 @@ export interface StorePasswordItem {
   name: string
   password: string
   description: string
+  allowedUsers: number[]
   owner: boolean
   users?: PasswordUser[]
 }
@@ -96,6 +97,7 @@ export interface PasswordStore {
   passwords: Ref<StorePasswordItem[]>
   groups: Ref<StoreGroupItem[]>
   loading: Ref<boolean>
+  passwordFormLoading: Ref<boolean>
   errors: Ref<AppErrorData>
   dragObjectInfo: Ref<DragObjectInfo | null>
   modalVisible: Ref<boolean>
@@ -191,6 +193,7 @@ export interface Password {
   name: string
   password: string
   description: string
+  allowedUsers: number[]
   group?:number
   fromGroupId?: number | null
   toGroupId?: number | null

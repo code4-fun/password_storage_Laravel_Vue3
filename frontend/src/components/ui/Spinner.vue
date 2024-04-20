@@ -5,12 +5,14 @@ const props = withDefaults(
   defineProps<{
     size?: string,
     border?: string,
-    height?: string
+    containerHeight?: string
+    color?: string
   }>(),
   {
     size: '25',
     border: '3',
-    height: '25'
+    containerHeight: 'fit-content',
+    color: '--primary-color'
   }
 )
 
@@ -18,12 +20,12 @@ const spinnerStyle = {
   width: `${props.size}px`,
   height: `${props.size}px`,
   border: `${props.border}px solid #fff`,
-  borderTop: `${props.border}px solid var(--primary-color)`,
-  borderRight: `${props.border}px solid var(--primary-color)`,
+  borderTop: `${props.border}px solid var(${props.color})`,
+  borderRight: `${props.border}px solid var(${props.color})`,
 }
 
 const containerStyle = {
-  height:`${props.height}px`
+  height: props.containerHeight == 'fit-content' ? 'fit-content' : `${props.containerHeight}px`
 }
 </script>
 

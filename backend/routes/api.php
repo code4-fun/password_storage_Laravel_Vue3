@@ -25,6 +25,7 @@ Route::group([
   'middleware' => 'auth:sanctum'
 ], function(){
   Route::patch('passwords/groups', [PasswordController::class, 'changePasswordGroup']);
+  Route::get('users/allow_list', [UserController::class, 'allUsersExceptAdminAndCurrentUser']);
   Route::apiResource('users', UserController::class)/*->middleware('role:admin')*/;
   Route::apiResource('roles', RoleController::class)->middleware('role:admin');
   Route::apiResource('passwords', PasswordController::class);

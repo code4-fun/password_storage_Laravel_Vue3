@@ -27,7 +27,7 @@ const updateSelectedOptions = (e: Event) => {
 </script>
 
 <template>
-  <Spinner height="46.391" v-if="optionsLoading || selectedOptionsLoading" />
+  <Spinner containerHeight="46.391" v-if="optionsLoading || selectedOptionsLoading" />
   <VueSelect_
     v-else
     class="vue_select"

@@ -3,6 +3,8 @@
 :root {
   --primary-color: hsl(235, 50%, 67%);
   --primary-color-hover: hsl(235, 50%, 73%);
+  --primary-btn: hsl(235, 100%, 67%);
+  --primary-btn-hover: hsl(235, 100%, 74%);
   --danger-color: hsl(351, 100%, 70%);
   --danger-color-hover: hsl(351, 100%, 76%);
   --success-color: hsl(120, 73%, 75%);

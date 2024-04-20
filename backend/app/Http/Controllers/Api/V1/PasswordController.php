@@ -142,8 +142,9 @@ class PasswordController extends Controller
    */
   public function store(Request $request): array|JsonResponse
   {
-    $name = request('name');
-    $group = request('group');
+    $name = $request->name;
+    $group = $request->toGroupId;
+    $allowedUsers = $request->allowedUsers;
 
     $password = auth()->user()->passwords()->where('name', $name)->get();
 
@@ -165,7 +166,14 @@ class PasswordController extends Controller
       'permitted' => 1
     ]);
 
-    if(isset($group)){
+    if(!empty($allowedUsers)){
+      $password->users()->attach($allowedUsers, [
+        'owner' => 0,
+        'permitted' => 1
+      ]);
+    }
+
+    if(isset($group) && $group > 0){
       $password->groups()->attach($group);
 
       return ['data' => [
@@ -210,13 +218,36 @@ class PasswordController extends Controller
   public function update(PasswordRequest $request, Password $password): array
   {
     $password->update([
-      'name' => $request->input('name'),
-      'password' => $request->input('password'),
-      'description' => $request->input('description'),
+      'name' => $request->name,
+      'password' => $request->password,
+      'description' => $request->description,
     ]);
 
     $passwordInDb = auth()->user()->passwords()->where('id', $password->id)->with('groups')->first();
     $targetGroupId = $request->input('toGroupId');
+
+    $newAllowedUsersIds = $request->allowedUsers;
+    $currentAllowedUsers = $password->users()
+      ->wherePivot('user_id', '!=', auth()->user()->getAuthIdentifier())
+      ->withPivot('permitted')
+      ->get();
+    $currentAllowedUserIds = $currentAllowedUsers->pluck('id')->toArray();
+    $newAllowedUserIdsDif = array_diff($newAllowedUsersIds, $currentAllowedUserIds);
+
+    foreach($currentAllowedUsers as $user){
+      if(!in_array($user->id , $newAllowedUsersIds)){
+        $password->users()->detach($user->id);
+      }
+    }
+
+    if(!empty($newAllowedUserIdsDif)){
+      foreach($newAllowedUserIdsDif as $id){
+        $password->users()->attach($id, [
+          'owner' => 0,
+          'permitted' => 1
+        ]);
+      }
+    }
 
     if($passwordInDb && $passwordInDb->groups->isNotEmpty()) {
       $initialGroupId = $passwordInDb->groups[0]->id;
