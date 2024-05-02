@@ -75,7 +75,10 @@ onUnmounted(() => {
       :selected="fromGroupId"
       :options="passwordStore.groups"
       :extraOptions="selectExtraOptions" />
-    <Button :value="buttonValue" :loading="passwordStore.passwordFormLoading" />
+    <Button
+      :disabled="passwordStore.allowedUsersLoading || userStore.loading"
+      :value="buttonValue"
+      :loading="passwordStore.formLoading" />
   </form>
 </template>
 

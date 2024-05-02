@@ -3,6 +3,9 @@ import Button from "@/components/ui/Button.vue";
 import Input from "@/components/ui/Input.vue";
 import {defineProps} from "vue"
 import type {Group} from "@/types";
+import {usePasswordStore} from "@/stores/passwordStore";
+
+const passwordStore = usePasswordStore()
 
 const props = withDefaults(
   defineProps<{
@@ -28,7 +31,7 @@ const handleSubmit = (event:Event) => {
   <form class='form' @submit.prevent="handleSubmit">
     <div class='form_title'>Create group</div>
     <Input name="name" :value="name" placeholder='Group name'/>
-    <Button :value="buttonValue" />
+    <Button :value="buttonValue" :loading="passwordStore.formLoading" />
   </form>
 </template>
 

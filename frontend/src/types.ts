@@ -97,7 +97,7 @@ export interface PasswordStore {
   passwords: Ref<StorePasswordItem[]>
   groups: Ref<StoreGroupItem[]>
   loading: Ref<boolean>
-  passwordFormLoading: Ref<boolean>
+  formLoading: Ref<boolean>
   errors: Ref<AppErrorData>
   dragObjectInfo: Ref<DragObjectInfo | null>
   modalVisible: Ref<boolean>

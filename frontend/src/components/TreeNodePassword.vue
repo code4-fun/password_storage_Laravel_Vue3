@@ -18,6 +18,14 @@ const props = withDefaults(
   }
 )
 
+const copyHandler = (id: number) => {
+  console.log(id)
+}
+
+const showHandler = (id: number) => {
+  console.log(id)
+}
+
 const editHandler = (password: StorePasswordItem, fromGroupId: number | null = null) => {
   passwordStore.toggleModal(true, {
     component: PasswordForm,
@@ -57,6 +65,8 @@ const handleDragStart = (item: StorePasswordItem, event: DragEvent) => {
         <span class="node_label">{{ password.name }}</span>
         <span class="node_label">{{ password.password }}</span>
         <div class="node_label node_content_buttons">
+          <div class="node_edit" @click.stop="copyHandler(password.id)">Show</div>
+          <div class="node_edit" @click.stop="showHandler(password.id)">Copy</div>
           <div v-if="password.owner" class="node_edit" @click.stop="editHandler(password, groupId)">Edit</div>
           <div v-if="password.owner" class="node_delete" @click.stop="deleteHandler(password.id, groupId)">Delete</div>
         </div>

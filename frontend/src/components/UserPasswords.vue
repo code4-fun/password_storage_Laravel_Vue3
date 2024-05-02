@@ -25,6 +25,14 @@ const deleteGroupHandler = (id: number) => {
   passwordStore.deleteGroup(id)
 }
 
+const copyPasswordHandler = (id: number) => {
+  console.log(id)
+}
+
+const showPasswordHandler = (id: number) => {
+  console.log(id)
+}
+
 const editPasswordHandler = (password: StorePasswordItem, fromGroupId: number | null = null) => {
   passwordStore.toggleModal(true, {
     component: PasswordForm,
@@ -186,6 +194,8 @@ const handleOutsideGroupDrop = (event: DragEvent) => {
         <span class="node_label">{{ node.name }}</span>
         <span class="node_label">{{ node.password }}</span>
         <div class="node_label node_content_buttons">
+          <div class="node_edit" @click.stop="showPasswordHandler(node.id)">Show</div>
+          <div class="node_edit" @click.stop="copyPasswordHandler(node.id)">Copy</div>
           <div v-if="node.owner" class="node_edit" @click.stop="editPasswordHandler(node)">Edit</div>
           <div v-if="node.owner" class="node_delete" @click.stop="deletePasswordHandler(node.id)">Delete</div>
         </div>

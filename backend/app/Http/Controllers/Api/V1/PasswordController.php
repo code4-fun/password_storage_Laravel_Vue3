@@ -7,6 +7,7 @@ use App\Http\Requests\V1\PasswordRequest;
 use App\Http\Resources\V1\PasswordResource;
 use App\Models\Group;
 use App\Models\Password;
+use Carbon\Carbon;
 use \Illuminate\Http\JsonResponse;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
@@ -97,12 +98,13 @@ class PasswordController extends Controller
 
       $groups = $groups->makeHidden(['created_at', 'updated_at']);
 
-      $groups = $groups->map(function ($group) {
-        $group->passwords = $group->passwords->map(function ($password) {
+      $groups = $groups->each(function ($group) {
+        $group->passwords = $group->passwords->each(function ($password) {
+          $password->updated = Carbon::parse($password->updated_at)->diffForHumans();
+          unset($password->updated_at);
           $password->owner = $password->users->first()->pivot->owner;
-          return $password->makeHidden(['created_at', 'updated_at', 'pivot', 'users']);
+          $password->makeHidden(['password', 'created_at', 'pivot', 'users']);
         });
-        return $group;
       });
 
       $passwords = Password::whereHas('users', function($query) use ($loggedInUser) {
@@ -119,14 +121,14 @@ class PasswordController extends Controller
         })
         ->get();
 
-      $passwords = $passwords->makeHidden(['created_at', 'updated_at', 'users']);
+      $passwords = $passwords->makeHidden(['password', 'created_at', 'users']);
 
-      $passwords = $passwords->map(function ($password) {
-        $password->users = $password->users->map(function ($user) use ($password) {
+      $passwords = $passwords->each(function ($password) {
+        $password->updated = Carbon::parse($password->updated_at)->diffForHumans();
+        unset($password->updated_at);
+        $password->users = $password->users->each(function ($user) use ($password) {
           $password->owner = $user->pivot->owner;
-          return $user->makeHidden(['created_at', 'updated_at', 'pivot', 'users']);
         });
-        return $password;
       });
 
       return ['data' => compact(['groups', 'passwords'])];

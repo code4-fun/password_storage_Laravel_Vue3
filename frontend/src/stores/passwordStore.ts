@@ -35,7 +35,7 @@ export const usePasswordStore = defineStore('passwordStore', () => {
     passwords: ref([]),
     groups: ref([]),
     loading: ref(false),
-    passwordFormLoading: ref(false),
+    formLoading: ref(false),
     errors: ref({}),
     dragObjectInfo: ref(null),
     modalVisible: ref(false),
@@ -181,7 +181,7 @@ export const usePasswordStore = defineStore('passwordStore', () => {
   }
 
   /**
-   * Toggle the visibility of a modal with optional content
+   * Toggle visibility of a modal with optional content
    *
    * @param {boolean} visible - Whether to make the modal visible or not
    * @param {ModalContent | null} modalContent - Optional content to be displayed in the modal
@@ -210,6 +210,7 @@ export const usePasswordStore = defineStore('passwordStore', () => {
    * @returns {Promise<void>} - Promise indicating the success or failure of the operation
    */
   const storeGroup = async (group: Group) => {
+    state.formLoading.value = true
     try{
       const response = await createGroupApi({
         uri: '/api/v1/groups',
@@ -225,6 +226,9 @@ export const usePasswordStore = defineStore('passwordStore', () => {
       }
     } catch(e){
       console.log(e)
+    } finally {
+      state.formLoading.value = false
+      toggleModal(false, null)
     }
   }
 
@@ -235,6 +239,7 @@ export const usePasswordStore = defineStore('passwordStore', () => {
    * @returns {Promise<void>} - Promise indicating the success or failure of the operation
    */
   const updateGroup = async (group: Group) => {
+    state.formLoading.value = true
     try{
       const response = await updateGroupApi({
         uri: `/api/v1/groups/${group.id}`,
@@ -245,10 +250,12 @@ export const usePasswordStore = defineStore('passwordStore', () => {
       state.groups.value.forEach((group, index, array) => {
         group.id === response.data.id && (array[index] = {...group, name: response.data.name})
       })
-      toggleModal(false, null)
     } catch(e){
       console.log(e)
       throw e
+    }finally {
+      state.formLoading.value = false
+      toggleModal(false, null)
     }
   }
 
@@ -296,13 +303,15 @@ export const usePasswordStore = defineStore('passwordStore', () => {
    */
   const storePassword = async (password: Password) => {
     try{
-      state.passwordFormLoading.value = true
+      state.formLoading.value = true
       const response = await createPasswordApi({
         uri: '/api/v1/passwords',
         body: {
           ...password
         }
       })
+      console.log(response)
+
       if(response.data?.group){
         const targetGroup = state.groups.value.find(i => i.id === response.data.group)
         const {group, ...password} = response.data
@@ -313,7 +322,7 @@ export const usePasswordStore = defineStore('passwordStore', () => {
     } catch(e){
       console.log(e)
     } finally {
-      state.passwordFormLoading.value = false
+      state.formLoading.value = false
       toggleModal(false, null)
     }
   }
@@ -325,7 +334,7 @@ export const usePasswordStore = defineStore('passwordStore', () => {
    */
   const updatePassword = async (password: Password) => {
     try{
-      state.passwordFormLoading.value = true
+      state.formLoading.value = true
       await updatePasswordApi({
         uri: `/api/v1/passwords/${password.id}`,
         body: {
@@ -352,7 +361,7 @@ export const usePasswordStore = defineStore('passwordStore', () => {
     } catch(e){
       console.log(e)
     } finally {
-      state.passwordFormLoading.value = false
+      state.formLoading.value = false
       toggleModal(false, null)
     }
   }

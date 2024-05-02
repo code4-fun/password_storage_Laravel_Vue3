@@ -13,7 +13,6 @@ const passwordStore = usePasswordStore()
 
 const createGroup = (group: Group) => {
   passwordStore.storeGroup(group)
-  passwordStore.toggleModal(false, null)
 }
 
 const createPassword = (password: Password) => {

@@ -62,7 +62,7 @@ export const createPasswordApi = (request: ApiRequest) => {
 }
 
 export const updatePasswordApi = (request: ApiRequest) => {
-  return makeRequest<ApiDataResponse<Password>>(request. uri, {
+  return makeRequest<ApiDataResponse<StorePasswordItem>>(request. uri, {
     method: 'PUT',
     data: request.body
   })
