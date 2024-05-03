@@ -6,12 +6,11 @@ import type {
   Group,
   PasswordGroupChangeResponse,
   StorePasswordItem,
-  PasswordToggleResponse,
-  Password
+  PasswordToggleResponse
 } from "@/types";
 
 export const getPasswordsApi = (request: ApiRequest) => {
-  return makeRequest<ApiDataResponse<StorePasswordItem[]>>(request.uri)
+  return makeRequest<ApiDataResponse<any>>(request.uri)
 }
 
 export const updateUserPasswordPivotTable = (request: ApiRequest) => {
@@ -55,7 +54,7 @@ export const getGroupApi = (request: ApiRequest) => {
 }
 
 export const createPasswordApi = (request: ApiRequest) => {
-  return makeRequest<ApiDataResponse<Password>>(request.uri, {
+  return makeRequest<ApiDataResponse<StorePasswordItem>>(request.uri, {
     method: 'POST',
     data: request.body
   })

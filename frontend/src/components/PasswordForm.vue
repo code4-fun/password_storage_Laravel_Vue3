@@ -19,6 +19,7 @@ const props = withDefaults(
     password?: string,
     description?: string,
     fromGroupId?: number | null,
+    formName?: string,
     buttonValue?: string,
     onSubmit: (password: Password) => void
   }>(), {}
@@ -60,9 +61,9 @@ onUnmounted(() => {
 
 <template>
   <form @submit.prevent="handleSubmit" class='form'>
-    <div class="form_title">Create password</div>
+    <div class="form_title">{{ formName }}</div>
     <Input name="name" :value="name" placeholder='Password name' />
-    <Input name="password" :value="password" placeholder='Password' />
+    <Input name="password" :value="password" :placeholder="formName?.includes('Create') ? 'Password' : 'New password'" />
     <Textarea name="description" :value="description" placeholder='Password description' />
     <VueSelect
       v-model="passwordStore.allowedUsers"

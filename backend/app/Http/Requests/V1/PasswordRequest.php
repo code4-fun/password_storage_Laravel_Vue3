@@ -23,7 +23,7 @@ class PasswordRequest extends FormRequest
   {
     return [
       'name' => ['required', 'max:50'],
-      'password' => ['required', 'max:50'],
+      'password' => ['max:50'],
       'description' => ['max:250'],
       'group' => ['integer']
     ];

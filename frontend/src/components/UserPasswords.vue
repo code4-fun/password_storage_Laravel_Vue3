@@ -15,6 +15,7 @@ const editGroupHandler = async (group: StoreGroupItem) => {
     props: {
       id: group.id,
       name: group.name,
+      formName: 'Update group',
       buttonValue: 'Save',
       onSubmit: passwordStore.updateGroup
     }
@@ -39,9 +40,9 @@ const editPasswordHandler = (password: StorePasswordItem, fromGroupId: number | 
     props: {
       id: password.id,
       name: password.name,
-      password: password.password,
       description: password.description,
       fromGroupId: fromGroupId,
+      formName: 'Update password',
       buttonValue: 'Save',
       onSubmit: passwordStore.updatePassword
     }
@@ -192,7 +193,7 @@ const handleOutsideGroupDrop = (event: DragEvent) => {
          @dragend="handleDragEnd">
       <div class="node_content">
         <span class="node_label">{{ node.name }}</span>
-        <span class="node_label">{{ node.password }}</span>
+        <span class="node_label">{{ node.updated }}</span>
         <div class="node_label node_content_buttons">
           <div class="node_edit" @click.stop="showPasswordHandler(node.id)">Show</div>
           <div class="node_edit" @click.stop="copyPasswordHandler(node.id)">Copy</div>

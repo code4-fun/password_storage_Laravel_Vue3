@@ -22,11 +22,31 @@ const createPassword = (password: Password) => {
 const options: DropdownOption[] = [
   {
     name: 'Create Group',
-    action: () => passwordStore.toggleModal(true, {component: GroupForm, props: {onSubmit: createGroup}})
+    action: () => passwordStore.toggleModal(
+      true,
+      {
+        component: GroupForm,
+        props: {
+          formName: 'Create group',
+          buttonValue: 'Create',
+          onSubmit: createGroup
+        }
+      }
+    )
   },
   {
     name: 'Create Password',
-    action: () => passwordStore.toggleModal(true, {component: PasswordForm, props: {onSubmit: createPassword}})
+    action: () => passwordStore.toggleModal(
+      true,
+      {
+        component: PasswordForm,
+        props: {
+          formName: 'Create password',
+          buttonValue: 'Create',
+          onSubmit: createPassword
+        }
+      }
+    )
   },
   {
     name: 'Logout',

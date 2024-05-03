@@ -64,13 +64,24 @@ export interface PasswordUser {
   permitted: boolean
 }
 
-export interface StorePasswordItem {
-  id: number
+export interface BasePassword {
   name: string
-  password: string
   description: string
+}
+
+export interface Password extends BasePassword {
+  id?: number
+  password?: string
   allowedUsers: number[]
+  fromGroupId?: number | null
+  toGroupId?: number | null
+}
+
+export interface StorePasswordItem extends BasePassword {
+  id: number
+  updated: string
   owner: boolean
+  group?:number
   users?: PasswordUser[]
 }
 
@@ -186,17 +197,6 @@ export interface DropdownOption {
 export interface Group {
   id?: number
   name: string
-}
-
-export interface Password {
-  id?: number
-  name: string
-  password: string
-  description: string
-  allowedUsers: number[]
-  group?:number
-  fromGroupId?: number | null
-  toGroupId?: number | null
 }
 
 export interface SelectItem {

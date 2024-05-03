@@ -32,7 +32,6 @@ const editHandler = (password: StorePasswordItem, fromGroupId: number | null = n
     props: {
       id: password.id,
       name: password.name,
-      password: password.password,
       description: password.description,
       fromGroupId: fromGroupId,
       buttonValue: 'Save',
@@ -63,7 +62,7 @@ const handleDragStart = (item: StorePasswordItem, event: DragEvent) => {
            :id="password.id.toString()"
            @dragstart="handleDragStart(password, $event)">
         <span class="node_label">{{ password.name }}</span>
-        <span class="node_label">{{ password.password }}</span>
+        <span class="node_label">{{ password.updated }}</span>
         <div class="node_label node_content_buttons">
           <div class="node_edit" @click.stop="copyHandler(password.id)">Show</div>
           <div class="node_edit" @click.stop="showHandler(password.id)">Copy</div>

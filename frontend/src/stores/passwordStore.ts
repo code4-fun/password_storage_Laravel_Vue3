@@ -10,7 +10,8 @@ import {
   deleteGroupApi,
   createPasswordApi,
   deletePasswordApi,
-  updatePasswordApi, fetchAllowedUsersApi
+  updatePasswordApi,
+  fetchAllowedUsersApi
 } from '@/api/password'
 import type {
   ApiDataResponse,
@@ -310,14 +311,12 @@ export const usePasswordStore = defineStore('passwordStore', () => {
           ...password
         }
       })
-      console.log(response)
-
       if(response.data?.group){
         const targetGroup = state.groups.value.find(i => i.id === response.data.group)
         const {group, ...password} = response.data
-        targetGroup?.passwords.push(password as StorePasswordItem)
+        targetGroup?.passwords.push(password)
       } else {
-        state.passwords.value.push(response.data as StorePasswordItem)
+        state.passwords.value.push(response.data)
       }
     } catch(e){
       console.log(e)
@@ -335,7 +334,7 @@ export const usePasswordStore = defineStore('passwordStore', () => {
   const updatePassword = async (password: Password) => {
     try{
       state.formLoading.value = true
-      await updatePasswordApi({
+      const response = await updatePasswordApi({
         uri: `/api/v1/passwords/${password.id}`,
         body: {
           ...password
@@ -344,11 +343,11 @@ export const usePasswordStore = defineStore('passwordStore', () => {
       if(password.fromGroupId){
         state.groups.value.forEach(item => {
           if(item.id === password.fromGroupId){
-            updatePasswordData(item.passwords, password)
+            updatePasswordData(item.passwords, response.data)
           }
         })
       } else {
-        updatePasswordData(state.passwords.value, password)
+        updatePasswordData(state.passwords.value, response.data)
       }
       if(password.toGroupId === -1 || password.toGroupId === password.fromGroupId){
         return
@@ -372,12 +371,12 @@ export const usePasswordStore = defineStore('passwordStore', () => {
    * @param {Password[]} passwords - The array of passwords to update.
    * @param {Password} newPassword - The new password data to update.
    */
-  const updatePasswordData = (passwords: Password[], newPassword: Password) => {
+  const updatePasswordData = (passwords: StorePasswordItem[], newPassword: StorePasswordItem) => {
     passwords.forEach((item, index, array) => {
       item.id === newPassword.id && (array[index] = {
         ...item,
         name: newPassword.name,
-        password: newPassword.password,
+        updated: newPassword.updated,
         description: newPassword.description
       })
     })

@@ -11,7 +11,7 @@ withDefaults(
     size?: string
   }>(),
   {
-    value: "Create",
+    value: "Go",
     disabled: false,
     loading: false,
     color: 'primary',

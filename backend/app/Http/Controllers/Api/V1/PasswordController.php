@@ -219,11 +219,16 @@ class PasswordController extends Controller
    */
   public function update(PasswordRequest $request, Password $password): array
   {
-    $password->update([
+    $data = [
       'name' => $request->name,
-      'password' => $request->password,
       'description' => $request->description,
-    ]);
+    ];
+
+    if (!is_null($request->password) && $request->password !== '') {
+      $data['password'] = $request->password;
+    }
+
+    $password->update($data);
 
     $passwordInDb = auth()->user()->passwords()->where('id', $password->id)->with('groups')->first();
     $targetGroupId = $request->input('toGroupId');
@@ -265,7 +270,10 @@ class PasswordController extends Controller
     }
 
     return ['data' => [
-      'message' => 'success'
+      'id' => $password->id,
+      'name' => $password->name,
+      'description' => $password->description,
+      'updated' => Carbon::parse($password->updated_at)->diffForHumans()
     ]];
   }
 

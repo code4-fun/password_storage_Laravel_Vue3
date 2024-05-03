@@ -11,6 +11,7 @@ const props = withDefaults(
   defineProps<{
     id?: number,
     name?: string,
+    formName?: string,
     buttonValue?: string,
     onSubmit: (group: Group) => void
   }>(),{}
@@ -29,7 +30,7 @@ const handleSubmit = (event:Event) => {
 
 <template>
   <form class='form' @submit.prevent="handleSubmit">
-    <div class='form_title'>Create group</div>
+    <div class='form_title'>{{ formName }}</div>
     <Input name="name" :value="name" placeholder='Group name'/>
     <Button :value="buttonValue" :loading="passwordStore.formLoading" />
   </form>
