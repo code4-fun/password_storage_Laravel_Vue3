@@ -23,7 +23,9 @@ class PasswordRequest extends FormRequest
    */
   public function rules(): array
   {
-    $passwordId = $this->route('password')->id;
+    $passwordId = $this->routeIs('passwords.update')
+      ? $this->route('password')->id
+      : null;
 
     $rules = [
       'name' => ['required', 'max:50', new UniquePasswordName($passwordId)],
@@ -31,7 +33,7 @@ class PasswordRequest extends FormRequest
       'group' => ['integer']
     ];
 
-    if ($this->routeIs('password.store')) {
+    if ($this->routeIs('passwords.store')) {
       $rules['password'] = ['required', 'max:50'];
     }
 
