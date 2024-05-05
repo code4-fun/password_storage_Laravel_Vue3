@@ -6,7 +6,7 @@ import Select from "@/components/ui/Select.vue"
 import {usePasswordStore} from "@/stores/passwordStore";
 import {useUserStore} from "@/stores/userStore";
 import type {Password, SelectItem, StoreUserItem} from "@/types";
-import {onMounted, onUnmounted} from "vue";
+import {onMounted, onUnmounted, defineProps} from "vue";
 import VueSelect from "@/components/ui/VueSelect.vue";
 
 const passwordStore = usePasswordStore()
@@ -56,6 +56,7 @@ onMounted(() => {
 onUnmounted(() => {
   userStore.users = []
   passwordStore.allowedUsers = []
+  passwordStore.errors = {}
 })
 </script>
 
@@ -63,8 +64,17 @@ onUnmounted(() => {
   <form @submit.prevent="handleSubmit" class='form'>
     <div class="form_title">{{ formName }}</div>
     <Input name="name" :value="name" placeholder='Password name' />
+    <div v-if="passwordStore.errors?.name" class="error-msg">
+      {{ passwordStore.errors?.name?.[0] }}
+    </div>
     <Input name="password" :value="password" :placeholder="formName?.includes('Create') ? 'Password' : 'New password'" />
+    <div v-if="passwordStore.errors?.password" class="error-msg">
+      {{ passwordStore.errors?.password?.[0] }}
+    </div>
     <Textarea name="description" :value="description" placeholder='Password description' />
+    <div v-if="passwordStore.errors?.description" class="error-msg">
+      {{ passwordStore.errors?.description?.[0] }}
+    </div>
     <VueSelect
       v-model="passwordStore.allowedUsers"
       :options="userStore.users"

@@ -40,9 +40,9 @@ export interface AuthStore {
 }
 
 export interface AuthData {
+  name?: string
   email: string
   password: string
-  name?: string
   password_confirmation?: string
   to?: string
 }
@@ -52,9 +52,6 @@ export interface ResetPasswordData {
   password_confirmation: string
   email: string
   token: string
-}
-
-export interface AppErrorData {
 }
 
 export interface PasswordUser {
@@ -104,12 +101,18 @@ export interface ModalContent {
 
 export type Collapsible = StorePasswordItem | StoreGroupItem
 
+export interface PasswordErrorData {
+  name?: string[]
+  password?: string[]
+  description?: string[]
+}
+
 export interface PasswordStore {
   passwords: Ref<StorePasswordItem[]>
   groups: Ref<StoreGroupItem[]>
   loading: Ref<boolean>
   formLoading: Ref<boolean>
-  errors: Ref<AppErrorData>
+  errors: Ref<PasswordErrorData>
   dragObjectInfo: Ref<DragObjectInfo | null>
   modalVisible: Ref<boolean>
   modalContent: Ref<ModalContent | null>
@@ -203,6 +206,9 @@ export interface SelectItem {
   id: number
   name: string
   disabled?: boolean
+}
+
+export interface AppErrorData {
 }
 
 export interface UserStore {

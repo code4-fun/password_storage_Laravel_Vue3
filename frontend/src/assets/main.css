@@ -111,6 +111,10 @@ body,
   color: var(--danger-color);
   margin-top: 8px;
 }
+.modal_inner .error-msg {
+  margin-top: -4px;
+  font-size: 14px;
+}
 .error-msg.top-error-msg {
   margin-bottom: 12px;
 }

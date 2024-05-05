@@ -20,7 +20,7 @@ class PasswordPolicy
    */
   public function view(User $user, Password $password): bool
   {
-    //
+    return true;
   }
 
   /**

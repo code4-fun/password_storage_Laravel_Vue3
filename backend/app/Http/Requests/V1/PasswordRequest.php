@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\V1;
 
+use App\Rules\UniquePasswordName;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class PasswordRequest extends FormRequest
@@ -17,15 +19,22 @@ class PasswordRequest extends FormRequest
   /**
    * Get the validation rules that apply to the request.
    *
-   * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+   * @return array<string, ValidationRule|array|string>
    */
   public function rules(): array
   {
-    return [
-      'name' => ['required', 'max:50'],
-      'password' => ['max:50'],
-      'description' => ['max:250'],
+    $passwordId = $this->route('password')->id;
+
+    $rules = [
+      'name' => ['required', 'max:50', new UniquePasswordName($passwordId)],
+      'description' => ['max:500'],
       'group' => ['integer']
     ];
+
+    if ($this->routeIs('password.store')) {
+      $rules['password'] = ['required', 'max:50'];
+    }
+
+    return $rules;
   }
 }

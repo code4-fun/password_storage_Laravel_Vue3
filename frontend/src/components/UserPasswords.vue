@@ -31,7 +31,7 @@ const copyPasswordHandler = (id: number) => {
 }
 
 const showPasswordHandler = (id: number) => {
-  console.log(id)
+  passwordStore.fetchPassword(id)
 }
 
 const editPasswordHandler = (password: StorePasswordItem, fromGroupId: number | null = null) => {

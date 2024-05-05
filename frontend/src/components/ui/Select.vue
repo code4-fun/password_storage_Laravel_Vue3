@@ -2,7 +2,7 @@
 import {defineProps} from "vue"
 import type {SelectItem} from "@/types";
 
-const props = withDefaults(
+withDefaults(
   defineProps<{
     selected: number | null,
     options?: SelectItem[],

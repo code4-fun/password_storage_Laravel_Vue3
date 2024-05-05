@@ -7,6 +7,7 @@ use App\Http\Requests\V1\PasswordRequest;
 use App\Http\Resources\V1\PasswordResource;
 use App\Models\Group;
 use App\Models\Password;
+use App\Rules\UniquePasswordName;
 use Carbon\Carbon;
 use \Illuminate\Http\JsonResponse;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -138,30 +139,20 @@ class PasswordController extends Controller
   /**
    * Store a newly created password.
    *
-   * @param  Request  $request The request object containing the password data.
+   * @param  PasswordRequest  $request The request object containing the password data.
    * @return array|JsonResponse An array containing the stored password data,
    * or a JSON response with an error message if the resource already exists.
    */
-  public function store(Request $request): array|JsonResponse
+  public function store(PasswordRequest $request): array|JsonResponse
   {
-    $name = $request->name;
+    $password = Password::create([
+      'name' => $request->name,
+      'password' => $request->password,
+      'description' => $request->description
+    ]);
+
     $group = $request->toGroupId;
     $allowedUsers = $request->allowedUsers;
-
-    $password = auth()->user()->passwords()->where('name', $name)->get();
-
-    if(!$password->isEmpty()){
-      return response()->json([
-        'error' => 'Conflict',
-        'message' => 'The resource already exists in the database.'
-      ], 409);
-    }
-
-    $password = Password::create([
-      'name' => request('name'),
-      'password' => request('password'),
-      'description' => request('description')
-    ]);
 
     auth()->user()->passwords()->attach($password, [
       'owner' => 1,

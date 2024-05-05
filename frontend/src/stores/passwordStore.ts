@@ -11,7 +11,8 @@ import {
   createPasswordApi,
   deletePasswordApi,
   updatePasswordApi,
-  fetchAllowedUsersApi
+  fetchAllowedUsersApi,
+  fetchPasswordApi
 } from '@/api/password'
 import type {
   ApiDataResponse,
@@ -23,7 +24,11 @@ import type {
   PasswordToggleResponse,
   StorePasswordItem
 } from "@/types";
-import {isAdminPasswords, isUserPasswords} from "@/types";
+import {
+  isAdminPasswords,
+  isUserPasswords,
+  isValidationError
+} from "@/types";
 import cloneDeep from 'lodash/cloneDeep'
 
 /**
@@ -318,11 +323,15 @@ export const usePasswordStore = defineStore('passwordStore', () => {
       } else {
         state.passwords.value.push(response.data)
       }
+      toggleModal(false, null)
     } catch(e){
-      console.log(e)
+      if (isValidationError(e)) {
+        state.errors.value = e.response.data.errors
+      } else {
+        console.error('An unexpected error occurred', (e as Error).message)
+      }
     } finally {
       state.formLoading.value = false
-      toggleModal(false, null)
     }
   }
 
@@ -350,6 +359,7 @@ export const usePasswordStore = defineStore('passwordStore', () => {
         updatePasswordData(state.passwords.value, response.data)
       }
       if(password.toGroupId === -1 || password.toGroupId === password.fromGroupId){
+        toggleModal(false, null)
         return
       }
       password.id && password.toGroupId && changeGroupLocally(
@@ -357,11 +367,15 @@ export const usePasswordStore = defineStore('passwordStore', () => {
         password.toGroupId === -2 ? null : password.toGroupId,
         password.fromGroupId
       )
+      toggleModal(false, null)
     } catch(e){
-      console.log(e)
+      if (isValidationError(e)) {
+        state.errors.value = e.response.data.errors
+      } else {
+        console.error('An unexpected error occurred', (e as Error).message)
+      }
     } finally {
       state.formLoading.value = false
-      toggleModal(false, null)
     }
   }
 
@@ -405,6 +419,13 @@ export const usePasswordStore = defineStore('passwordStore', () => {
       console.log(e)
       throw e
     }
+  }
+
+  const fetchPassword = async (passwordId: number) => {
+    const response = await fetchPasswordApi({
+      uri: `/api/v1/passwords/${passwordId}`
+    })
+    console.log(response)
   }
 
   /**
@@ -464,6 +485,7 @@ export const usePasswordStore = defineStore('passwordStore', () => {
     storePassword,
     deletePassword,
     updatePassword,
-    fetchAllowedUsers
+    fetchAllowedUsers,
+    fetchPassword
   }
 })
