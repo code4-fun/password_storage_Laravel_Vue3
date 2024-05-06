@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\V1;
 
+use App\Rules\UniqueName;
 use Illuminate\Foundation\Http\FormRequest;
 
 class GroupRequest extends FormRequest
@@ -21,8 +22,12 @@ class GroupRequest extends FormRequest
    */
   public function rules(): array
   {
+    $currentId = $this->routeIs('groups.update')
+      ? $this->route('group')->id
+      : null;
+
     return [
-      'name' => ['required', 'string', 'max:50']
+      'name' => ['required', 'max:50', new UniqueName('groups', $currentId)]
     ];
   }
 }

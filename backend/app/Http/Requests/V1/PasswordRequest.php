@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\V1;
 
-use App\Rules\UniquePasswordName;
+use App\Rules\UniqueName;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -23,12 +23,12 @@ class PasswordRequest extends FormRequest
    */
   public function rules(): array
   {
-    $passwordId = $this->routeIs('passwords.update')
+    $currentId = $this->routeIs('passwords.update')
       ? $this->route('password')->id
       : null;
 
     $rules = [
-      'name' => ['required', 'max:50', new UniquePasswordName($passwordId)],
+      'name' => ['required', 'max:50', new UniqueName('passwords', $currentId)],
       'description' => ['max:500'],
       'group' => ['integer']
     ];

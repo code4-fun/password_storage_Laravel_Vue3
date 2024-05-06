@@ -230,11 +230,15 @@ export const usePasswordStore = defineStore('passwordStore', () => {
           passwords: []
         })
       }
+      toggleModal(false, null)
     } catch(e){
-      console.log(e)
+      if (isValidationError(e)) {
+        state.errors.value = e.response.data.errors
+      } else {
+        console.error('An unexpected error occurred', (e as Error).message)
+      }
     } finally {
       state.formLoading.value = false
-      toggleModal(false, null)
     }
   }
 
@@ -256,12 +260,15 @@ export const usePasswordStore = defineStore('passwordStore', () => {
       state.groups.value.forEach((group, index, array) => {
         group.id === response.data.id && (array[index] = {...group, name: response.data.name})
       })
+      toggleModal(false, null)
     } catch(e){
-      console.log(e)
-      throw e
+      if (isValidationError(e)) {
+        state.errors.value = e.response.data.errors
+      } else {
+        console.error('An unexpected error occurred', (e as Error).message)
+      }
     }finally {
       state.formLoading.value = false
-      toggleModal(false, null)
     }
   }
 
