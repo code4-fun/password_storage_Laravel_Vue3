@@ -28,6 +28,8 @@ input {
   width: 100%;
   height: 41px;
   font-size: 16px;
+  font-family: inherit;
+  font-weight: inherit;
   border: 2px solid hsl(235, 100%, 90%);
   border-radius: 4px;
 }

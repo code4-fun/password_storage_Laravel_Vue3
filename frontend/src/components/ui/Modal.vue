@@ -36,6 +36,7 @@ const passwordStore = usePasswordStore();
   overflow-y: auto;
   overflow-x: hidden;
   max-height: 95vh;
+  max-width: 500px;
   background-color: #fff;
   border-radius: 3px;
   scrollbar-width: thin;
