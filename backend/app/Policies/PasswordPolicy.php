@@ -63,6 +63,11 @@ class PasswordPolicy
     //
   }
 
+  public function togglePasswordStatus(User $user)
+  {
+    return $user->hasRole('admin');
+  }
+
   public function changePasswordGroup(
     User $user,
     Password $password,

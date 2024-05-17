@@ -286,9 +286,13 @@ class PasswordController extends Controller
    * Toggle status of a password for a given user.
    *
    * @return array An array containing the updated password status data.
+   *
+   * @throws AuthorizationException If the user is not authorized to perform the action.
    */
   public function togglePasswordStatus(): array
   {
+    $this->authorize('togglePasswordStatus', Password::class);
+
     $passwordId = request()->route('passwordId');
     $userId = request()->route('userId');
     $permitted = request('permitted');
